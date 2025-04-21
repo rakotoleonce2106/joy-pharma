@@ -1,0 +1,61 @@
+App\Entity\User:
+    operations:
+        get_collection:
+            class: ApiPlatform\Metadata\GetCollection
+            openapi:
+                security:
+                    -   JWT: [ 'ROLE_ADMIN' ]
+
+        post:
+            class: ApiPlatform\Metadata\Post
+            processor: App\State\UserPasswordHasher
+            validationContext:
+                groups: ['Default', 'user:create']
+
+        get:
+            class: ApiPlatform\Metadata\Get
+            openapi:
+                security:
+                    -   JWT: [ 'ROLE_ADMIN' ]
+
+        put:
+            class: ApiPlatform\Metadata\Put
+            processor: App\State\UserPasswordHasher
+
+        patch:
+            class: ApiPlatform\Metadata\Patch
+            processor: App\State\UserPasswordHasher
+
+        delete:
+            class: ApiPlatform\Metadata\Delete
+            openapi:
+                security:
+                    -   JWT: [ 'ROLE_ADMIN' ]
+            
+        current_user:
+            class: ApiPlatform\Metadata\Get
+            security: 'is_granted("ROLE_USER")'
+            securityMessage: 'Only authenticated users can get current user.'
+            method: GET
+            uriTemplate: "/me"
+            controller: App\Controller\Api\MeController
+            normalizationContext:
+                groups: [ "user:read" ]
+            read: false
+            uriVariables: []
+            openapiContext:
+                summary: Retrieves the current user resource.
+                description: >
+                    Retrieves the current user resource.
+            openapi:
+                security:
+                    -   JWT: [ 'ROLE_USER' ]
+
+    normalizationContext:
+        groups: ['user:read']
+
+    denormalizationContext:
+        groups: ['user:create', 'user:update']
+        
+
+

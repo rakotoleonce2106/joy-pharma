@@ -33,3 +33,6 @@ new-password:
     path: /new-password
     controller: App\Controller\AuthController::new_password
 
+
+api_refresh_token:
+    path: /api/token/refresh
