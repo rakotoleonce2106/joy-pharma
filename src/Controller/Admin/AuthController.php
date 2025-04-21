@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Controller\Bootstrap\DefaultLayoutController;
 use Symfony\Component\HttpFoundation\Response;
