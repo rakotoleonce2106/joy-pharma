@@ -1,24 +1,22 @@
 <?php
-// src/Controller/MeController.php
+
+declare(strict_types=1);
 
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
-
+#[AsController]
 class MeController extends AbstractController
 {
-    private Security $security;
 
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
 
-    public function __invoke(): ?UserInterface
+    public function __invoke(): JsonResponse
     {
-        return $this->security->getUser();
+        $user = $this->getUser();
+
+        return $this->json($user);
     }
 }

@@ -9,8 +9,13 @@ App\Entity\User:
         post:
             class: ApiPlatform\Metadata\Post
             processor: App\State\UserPasswordHasher
+            uriTemplate: "/register"
             validationContext:
                 groups: ['Default', 'user:create']
+            normalizationContext:
+                groups: [ "user:read" ]
+            input_formats:
+                multipart: [ 'multipart/form-data' ]
 
         get:
             class: ApiPlatform\Metadata\Get
@@ -25,6 +30,14 @@ App\Entity\User:
         patch:
             class: ApiPlatform\Metadata\Patch
             processor: App\State\UserPasswordHasher
+            input_formats:
+                multipart: [ 'multipart/form-data' ]
+            validationContext:
+                groups: [ 'Default', 'user:update' ]
+            normalizationContext:
+                groups: [ "user:read" ]
+            security: "is_granted('ROLE_USER')"
+            
 
         delete:
             class: ApiPlatform\Metadata\Delete

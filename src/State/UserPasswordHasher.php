@@ -6,29 +6,31 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\User;
+use ApiPlatform\Metadata\Post;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 
-/**
- * @implements ProcessorInterface<User, User|void>
- */
 final readonly class UserPasswordHasher implements ProcessorInterface
 {
     public function __construct(
         private ProcessorInterface $processor,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private AuthenticationSuccessHandler $successHandler
     )
     {
     }
 
-    /**
-     * @param User $data
-     */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): User
+
+
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
-        if (!$data->getPlainPassword()) {
+        $isPostUser = $data instanceof User && $operation instanceof Post;
+
+        if (!$data instanceof User || !$data->getPlainPassword()) {
             return $this->processor->process($data, $operation, $uriVariables, $context);
         }
 
+        // Hashage du mot de passe
         $hashedPassword = $this->passwordHasher->hashPassword(
             $data,
             $data->getPlainPassword()
@@ -36,6 +38,13 @@ final readonly class UserPasswordHasher implements ProcessorInterface
         $data->setPassword($hashedPassword);
         $data->eraseCredentials();
 
-        return $this->processor->process($data, $operation, $uriVariables, $context);
+        $processedUser = $this->processor->process($data, $operation, $uriVariables, $context);
+
+        if ($isPostUser) {
+            return $this->successHandler->handleAuthenticationSuccess($data);
+        }
+
+        return $processedUser;
     }
+
 }

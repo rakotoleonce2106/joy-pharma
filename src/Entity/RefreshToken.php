@@ -7,10 +7,10 @@ use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken as BaseRefreshToken;
 
 /**
  * @ORM\Entity
- * @ORM\Table("refresh_token")
+ * @ORM\Table("refresh_tokens")
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'refresh_token')]
+#[ORM\Table(name: 'refresh_tokens')]
 class RefreshToken extends BaseRefreshToken
 {
 }
